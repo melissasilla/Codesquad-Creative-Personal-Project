@@ -1,3 +1,5 @@
+// NeatGradient specifications
+
 import { NeatGradient } from "https://esm.run/@firecms/neat";
 
 const config = {
@@ -100,3 +102,5 @@ window,addEventListener("resize" , () => {
     canvas.style.width = window.innerWidth + "px";
     canvas.style.height = window.innerHeight + "px";
 });
+
+

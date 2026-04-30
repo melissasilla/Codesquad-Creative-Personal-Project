@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
-    margin: 0;
-    height: 0;
+    /* margin: 0;
+    height: 0; */
 }
 
 
@@ -59,10 +59,12 @@ html,body {
     background: transparent;
 }
 
-/* landing page: text adjustment */
+/* landing page: image and text adjustment */
 
 .main-title {
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
+    height: 100px;
+    width: auto;
   
 
 }
@@ -79,20 +81,22 @@ html,body {
 .date h2 {
     font-family: "Bruno Ace SC" , sans-serif;
     font-size: 1rem;
-    padding-top: 20px;
+    /* padding-top: 20px; */
 }
 
 img {
     display: block;
     width: 400px;
     padding-top: 20px;
-    /* max-width: 90%; */
+    max-width: 60%;
     z-index: 10;
     position: relative;
     height: auto;
     margin: 20px 0;
 
 }
+
+/* navigation bar and navigation arrows */
 
 .nav-bar {
     width: 100%;
@@ -102,17 +106,24 @@ img {
 }
 
 
-/* .image-arrow-container{
+.image-arrow-container{
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 100%;
-    margin: 20px 0;
-} */
-
-
-.fa-angle-left {
-    
-
-
+   justify-content: space-between;
+   width: 100%;
+   max-width: 1200px;
+   /* margin: 20px auto; */
+   /* padding: 0 50px; */
 }
+
+
+.fa-angle-left, .fa-angle-right {
+    /* font-family: 3rem; */
+    cursor: pointer;
+    z-index: 10;
+    
+}
+
+
+/* ====== Footer adjustments ============ */
