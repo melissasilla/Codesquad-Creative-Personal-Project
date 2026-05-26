@@ -1,4 +1,4 @@
-// NeatGradient specifications
+// =========== NeatGradient specifications =================================
 
 import { NeatGradient } from "https://esm.run/@firecms/neat";
 
@@ -93,14 +93,105 @@ const gradient = new NeatGradient({
 });
 
 
+
+// ============. colors to sync with Instagram post colors ================================
+async function matchWithInstagram() {
+    try{
+        const response = await fetch ("/api/new-image");
+        const data = await response.json();
+
+        if (data.url) {
+            const img = document.querySelector(".img");
+
+            img.setAttribute("crossOrigin", "anonymous");
+            img.src = data.url; 
+
+// =============== using colorThief library to change background colors with flexibility =======================
+        img.onload = () => {
+            const colorThief = new colorThief();
+            
+            const palette = colorThief.getPalette(img, 5);
+
+            const newColorObjects = palette.map( c => ({
+                color: `rgb (${c[0]}, ${c[1]}, ${c[2]})` , 
+                enabled: true
+            }));
+
+            config.colors = newColorObjects;
+            gradient.updateConfig(config);
+        };
+
+        }
+    
+    } catch (error) {
+        console.error("Sorry! The connection here has failed." , error);
+    }
+}
+
+
+matchWithInstagram();
+
+
 window.addEventListener("scroll", () => {
     gradient.yOffset = window.scrollY;
 });
 
 window,addEventListener("resize" , () => {
-    const canvas = DocumentFragment.getElementById("gradient");
+    const canvas = Document.getElementById("gradient");
     canvas.style.width = window.innerWidth + "px";
     canvas.style.height = window.innerHeight + "px";
 });
 
+
+
+
+
+// ========================  Date + Time for Dashboard Greeting ==========================
+
+function updateDashboardTime () {
+
+    const now = new Date();
+
+//formatting dashboard time
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ?'PM' : 'AM';
+
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+
+    const timeString= `${hours}:${minutes} ${ampm}`;
+
+
+// Time of day Greeting options
+    const currentHour = now.getHours();
+    let greetingString = "Good Evening, Melissa.";
+
+    if(currentHour < 12) {
+        greetingString = "Good Morning, Melissa.";
+    }else if (currentHour <18) {
+        greetingString = "Good Afternoon, Melissa."
+    }
+
+
+    const dateOptions = {weekday: "long", month: "long" , day: "numeric"};
+    const dateString = now.toLocaleDateString("en-US" , dateOptions);
+
+
+
+
+    // outputs to HMTL
+    document.getElementById("dash-clock").innerText = timeString;
+    document.getElementById("dash-greeting").innerText = greetingString;
+    document.getElementById("dash-date").innerText = dateString;
+
+
+}
+
+
+updateDashboardTime();
+
+setInterval(updateDashboardTime, 1000);
 
