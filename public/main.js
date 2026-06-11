@@ -203,20 +203,36 @@ setInterval(updateDashboardTime, 1000);
 
 // ======================== Zapier Google Drive  ==========================
 
-function convertGoogleDriveUrl(url) {
-    if (!url) {
-        return "images/474.png"
-    }
+//REWRITE
 
-    if (url.includes("drive.google.com") || url.includes ("drive.usercontent.google.com")) {
-        const fileId= url.match(/id=([^&]+)/)?.[1] || url.match(/\/d\/([^/]+)/)?.[1];
-    
-        if(fileId) {
-            return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
- 
+function convertGoogleDriveUrl(url) {
+    if(!url) return "images/474.png";
+    if(Array.isArray(url)) url= url[0];
+    if (typeof url !== "string") return "images/474.png";
+
+
+    url = url.trim();
+
+if (!url.includes("drive.google.com") && !url.includes("drive.usercontent.google.com") && !url.includes(googleapis.com)) {
+    return url;
 }
-return url;
+
+if (url.includes("googleapis.com/drive")) {
+    const apiIdMatch = url.match(/\/files\/([a-zA-Z0-9-_]{20,100})/);
+    const apiFileId = apiIdMatch ? apiIdMatch[1] : null;
+
+    if(apiFileId) {
+        return `https://drive.google.com/thumbnail?id=${apiFileId}&sz=w1000`;
+    }
+}
+
+const fileIdMatch = url.match(/(?:\/d\/|id=)([a-zA-Z0-9-_]{20,100})/);
+const standardFileId = fileIdMatch ? fileIdMatch[1] : null;
+
+if (standardFileId) {
+    return `https://drive.google.com/thumbnail?id=${standardFileId}&sz=w1000`;
+}
+return "images/474.png";
 }
 
 
@@ -243,7 +259,7 @@ async function showQuoteAndMatchColors(index) {
 
 
     const currentQuote = timelineQuote[index];
-    imgElement.crossOrigin = "Anonymous";
+    imgElement.crossOrigin = "anonymous";
 
     imgElement.onload = function() {
         try {
@@ -281,9 +297,11 @@ async function showQuoteAndMatchColors(index) {
         }catch(error) {
             console.error("Color Thief extraction was not successful" , error);
         };
-    
-        imgElement.src = convertGoogleDriveUrl(currentQuote.url);
+      
     };
+
+  const convertedDriveUrl = convertGoogleDriveUrl(currentQuote.url);
+  imgElement.src = `/api/proxy-image?url=${encodeURIComponent(convertedDriveUrl)}`;
 };
 
 //Right arrow functionality (forward to view newer quotes)
