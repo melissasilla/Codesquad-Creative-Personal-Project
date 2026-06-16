@@ -98,42 +98,26 @@ console.log(gradient);
 
 
 async function matchWithInstagram() {
-    try{
+    try {
         const response = await fetch ("/api/new-image");
         const data = await response.json();
 
         if (data.url) {
-            // const img = document.querySelector(".img");
-
-            // img.setAttribute("crossOrigin", "anonymous");
-            // img.src = data.url; 
-
-// using colorThief library to change background colors with flexibility 
-
-
-        img.onload = () => {
-            const colorThief = new colorThief();
-            
-            const palette = colorThief.getPalette(img, 5);
-
-            const newColorObjects = palette.map( c => ({
-                color: `rgb (${c[0]}, ${c[1]}, ${c[2]})` , 
-                enabled: true
-            }));
-
-            config.colors = newColorObjects;
-            gradient.updateConfig(config);
-        };
-
+            img.onload = () => {
+                const colorThief = new ColorThief();
+                const palette = colorThief.getPalette(img, 5);
+                const newColorObjects = palette.map( c => ({
+                    color: `rgb (${c[0]}, ${c[1]}, ${c[2]})` , 
+                    enabled: true
+                }));
+                config.colors = newColorObjects;
+                gradient.updateConfig(config);
+            };
         }
-    
     } catch (error) {
         console.error("Sorry! The connection here has failed." , error);
     }
 }
-
-
-matchWithInstagram();
 
 
 window.addEventListener("scroll", () => {
@@ -200,10 +184,24 @@ updateDashboardTime();
 setInterval(updateDashboardTime, 1000);
 
 
+// ======================== Youtube Affirmation Videos  ==========================
+
+const affirmationPlaylist = [
+    {id: "zsVjTpQlZc4" , title: "Affirmations for God's Guidance and Wisdom"},
+    {id: "LrmbfMtCx2I" , title: "Affirmations for Walking by Faith, Not by Sight"},
+    {id: "koYErjpLQGk" , title: "Daily Affirmations for Self-Love and Confidence"},
+     {id: "HRQS7Gszbbs" , title: "Best Daily Affirmations for Miracles"}
+
+];
+
+let youtubePlayer;
+
+
+
+
 
 // ======================== Zapier Google Drive  ==========================
 
-//REWRITE
 
 function convertGoogleDriveUrl(url) {
     if(!url) return "images/474.png";
@@ -343,6 +341,270 @@ async function loadDashboardQuoteTimeline() {
 }
 
 loadDashboardQuoteTimeline();
+
+
+
+// ======================== Youtube API   ==========================
+const tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+const firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+window.onYouTubeIframeAPIReady = function() {
+    youtubePlayer = new YT.Player ('audio-player' , {
+        height: '0',
+        width: '0',
+        videoId: affirmationPlaylist[0].id,
+        playerVars: {
+            'playsinline': 1,
+            'controls': 0,
+            'disablekb': 1
+        },
+        events: {
+            'onReady': window.onPlayerReady
+        }
+    });
+}
+
+
+window.onPlayerReady = function(event) {
+    console.log("Affirmation streaming is prepared.");
+    renderAffirmationsList();
+}
+
+// ======================== Audio Interface for Left Panel   ==========================
+
+function renderAffirmationsList() {
+    const listContainer = document.getElementById("affirmations-list");
+
+    if (!listContainer) return;
+
+    listContainer.innerHTML = "";
+
+    affirmationPlaylist.forEach((track, index) => {
+        const trackRow = document.createElement("div");
+        trackRow.className = "track-row";
+        trackRow.style.display = "flex";
+        trackRow.style.alignItems = "center";
+        trackRow.style.margin = "10px 0";
+
+
+        const playButton = document.createElement("button");
+        playButton.innerHTML = "Play";
+        playButton.style.marginRight = "12px";
+
+
+        playButton.addEventListener ("click" , () => {
+            handleTrackPlayback(track.id, playButton);
+        });
+
+
+        const trackTitle = document.createElement("span");
+        trackTitle.innerText = track.title;
+
+
+        trackRow.appendChild(playButton);
+        trackRow.appendChild(trackTitle);
+        listContainer.appendChild(trackRow);
+
+    });
+
+
+}
+ // Playback workflow
+
+
+ let currentPlayingButton = null;
+
+ function handleTrackPlayback (videoId, clickedButton) {
+    if (!youtubePlayer || typeof youtubePlayer.getPlayerState !== "function") return;
+
+
+    const playerState = youtubePlayer.getPlayerState();
+    const currentVideoUrl = youtubePlayer.getVideoUrl();
+
+
+    if (currentVideoUrl && currentVideoUrl.includes(videoId)) {
+        if (playerState === YT.PlayerState. PLAYING) {
+            youtubePlayer.pauseVideo();
+            clickedButton.innerHTML = "Play";
+        }else {
+            youtubePlayer.playVideo();
+            clickedButton.innerHTML = "Pause";
+        }
+    }else {
+        if (currentPlayingButton) {
+            currentPlayingButton.innerHTML = "Play";
+
+        }
+
+        youtubePlayer.loadVideoById(videoId);
+        youtubePlayer.playVideo();
+        clickedButton.innerHTML = "Pause";
+        currentPlayingButton = clickedButton;
+    }
+ }
+
+
+
+// ======================== Discover Soundscapes Functionality ==========================
+
+let audioContext;
+let audioBuffer = null;
+let currentBufferSource = null;
+let soundscapePlaying = false;
+let playbackDirection = 1;
+let startTime = 0;
+let pausedAt = 0;
+
+
+const soundscapePlaylist = [
+    {file: "Flute Music with Rain Ambiance by WR-Sound-Library.mp3" , title:"Flute Music with Rain"},
+    {file: "Lo-Fi Chill by leberch.mp3" , title:"Lo-Fi Chill"},
+     {file: "Soft Sounds of Rain by EchoGateStudios.mp3" , title:"Soft Sounds of Rain"},
+      {file: "Soundscape Ambient by leberch.mp3" , title:"Soundscape Ambient"},
+];
+
+let currentTrackIndex = 0;
+
+
+
+
+async function loadSoundscapeTracks(index) {
+    try {
+        stopSoundscapeTracks();
+        soundscapePlaying = false;
+        pausedAt = 0;
+
+
+        const track = soundscapePlaylist[index];
+        console.log(`Loading track: ${track.title}`);
+
+        const response = await fetch(`/audio/${encodeURIComponent(track.file)}`);
+
+        const arrayBuffer = await response.arrayBuffer();
+
+
+        if(!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        console.log(`${track.title} has loaded and ready to play.`);
+
+        document.querySelector(".soundscape-title").innerText = track.title;
+    
+}catch (error) {
+    console.error("Soundscape audio file could not be loaded." , error);
+}
+
+}
+
+//play + resume tracks
+
+function playSoundscape() {
+    if (!audioBuffer || !audioContext) return;
+
+    stopSoundscapeTracks();
+
+
+    currentBufferSource = audioContext.createBufferSource();
+    currentBufferSource.buffer = audioBuffer;
+    currentBufferSource.loop = true;
+    currentBufferSource.connect(audioContext.destination);
+
+
+    startTime = audioContext.currentTime - pausedAt;
+    currentBufferSource.start(0, pausedAt);
+
+    soundscapePlaying = true;
+
+
+}
+
+function pauseSoundscape() {
+        if (!soundscapePlaying || !currentBufferSource) return;
+
+        pausedAt = audioContext.currentTime - startTime;
+
+        stopSoundscapeTracks();
+        soundscapePlaying = false;
+    }
+
+function stopSoundscapeTracks() {
+    if (currentBufferSource) {
+        try { 
+            currentBufferSource.stop();
+        }catch(error) {}
+        currentBufferSource.disconnect();
+        currentBufferSource = null;
+
+    }
+
+
+}
+
+//Event listeners for buttons
+
+function initSoundscapeEventListeners() {
+    const playButton = document.getElementById("button-soundscape-toggle");
+
+    const prevButton = document.getElementById("button-soundscape-rewind");
+
+    const nextButton = document.getElementById("button-soundscape-forward");
+
+if (!playButton || !prevButton || !nextButton) return;
+
+
+
+playButton.addEventListener("click" , () =>{
+    if(soundscapePlaying) {
+        pauseSoundscape();
+        playButton.innerHTML = "Play";
+    }else {
+        playSoundscape();
+        playButton.innerHTML = "Pause";
+    }
+});
+
+
+prevButton.addEventListener("click" , async () => {
+    currentTrackIndex--;
+    if (currentTrackIndex < 0) {
+        currentTrackIndex = soundscapePlaylist.length-1;
+    }
+
+    playButton.innerHTML = "Track loading...";
+    await loadSoundscapeTracks(currentTrackIndex);
+    playSoundscape();
+    playButton.innerHTML = "Pause";
+});
+
+nextButton.addEventListener("click" , async () =>{
+    currentTrackIndex++;
+    if(currentTrackIndex >= soundscapePlaylist.length) {
+        currentTrackIndex = 0;
+    }
+
+    playButton.innerHTML = "Tracks loading...";
+    await loadSoundscapeTracks(currentTrackIndex);
+    playSoundscape();
+    playButton.innerHTML = "Pause";
+});
+
+}
+
+async function startSoundscapeTracks() {
+    initSoundscapeEventListeners();
+    await loadSoundscapeTracks(currentTrackIndex);
+}
+
+
+startSoundscapeTracks();
+
+
 
 
 // ========================  Check-in for connection (health endpoint) ==========================

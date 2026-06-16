@@ -10,11 +10,11 @@
      
     
 
-    <!-- Font style: Bruno Ace SC -->
+    <!-- Font style: Bruno Ace SC + EB Garamond -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&family=Exo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <!-- Icons -->
     <script src="https://kit.fontawesome.com/f7fbad1ef5.js" crossorigin="anonymous"></script>
@@ -58,27 +58,47 @@
             </div>
 
             <!-- left panel content (possible temporary placeholders) -->
-            <h3> Your Sound Space Wellness Feed</h3>
+            <h3> Your Sound Space <br>Wellness Feed</h3>
 
-            <div class="feed-item active-audio">
+            <!-- <div class="feed-item active-audio">
                 <p> Your Daily Guided Focus Meditation</p>
                 <button class="play-button"> <i class=" fa-solid fa-play"></i></button>
+            </div> -->
+
+     <div class="feed-item">
+                <p>Discover Soundscapes</p>
+                <p>Audio customized for focus</p>
+
+                <div class="soundscape-control-row">
+                    <span class="soundscape-title">Deep Focus Ambient</span>
+
+                    <div class="soundscape-btn-group">
+                        <button id="button-soundscape-rewind" class="soundscape-action-button">Previous</button>
+
+                        <button id="button-soundscape-toggle" class="soundscape-action-button">Play</button>
+
+                        <button id="button-soundscape-forward" class="soundscape-action-button">Next</button>
+                    </div>
+
+                </div>
             </div>
+
 
             <div class="feed-item">
                 <p> Your Affirmations</p>
                 <p> Track recommendation based on focus</p>
+
+                <div id="affirmations-list"></div>
+
+                <div id="audio-player"></div>
             </div>
 
-            <div class="feed-item">
-                <p>Discover Soundscapes</p>
-                <p>Audio customized for focus</p>
-            </div>
+           
 
-            <div class="feed-item">
+            <!-- <div class="feed-item">
                 <p> Pulse Sync <i class="fa-solid fa-circle-check" style="color: #ffffff00"></i></p>
                 <p>Background gradient connected to listening</p>
-            </div>
+            </div> -->
 
 
         </section>

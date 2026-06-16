@@ -115,10 +115,14 @@ app.post("/api/new-quote" , (request, response) => {
     }
 });
 
-app.get("/api/get-all-quotes", (request, response) => {
-    response.json(historyOfQuotes);
+app.get("/api/get-all-quotes", async (req, res) => {
+    try {
+        // Your code that returns the historical quotes array...
+        res.json(historyOfQuotes); 
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
-
 
 app.get("/", (request, response) => {
     response.sendFile(path.join(__dirname, "public", "home.html"));
