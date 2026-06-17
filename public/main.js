@@ -605,6 +605,48 @@ async function startSoundscapeTracks() {
 startSoundscapeTracks();
 
 
+// ========================  Connections and Tools Functionality ==========================
+
+let todoList = JSON.parse(localStorage.getItem('yss_todos')) || [];
+let moodLogs = JSON.parse(localStorage.getItem('yss_moods')) || [];
+let journalLogs = JSON.parse(localStorage.getItem('yss_journals')) || [];
+
+
+const dailyPrompts = [
+    "What areas of my life am I growing in, even if progress fells slow?",
+     "Write down three small victories you achieved today, no matter how minor",
+     "How have you successfully prioritized boundary setting in your schedule this week?",
+     "What is a personal development challenge you feel ready to step into tomorrow?",
+     "Describe a piece of creative art or music that recently grounded your thoughts",
+     "What moment today helped you feel most focused and present?",
+    "Describe a conversation that gave you a new perspective or insight.",
+    "What is one decision you made today that aligned with your long-term goals?",
+    "How did you create space for rest, reflection, or recovery today?",
+    "What challenge did you navigate with more confidence than you would have a year ago?",
+    "Which part of your daily routine feels most supportive of your well-being right now?",
+    "What is something you noticed today that you might have overlooked in the past?",
+    "Reflect on a recent accomplishment that deserves more recognition than you've given it.",
+    "What personal value guided your actions most strongly today?",
+    "How did you demonstrate patience, kindness, or understanding toward yourself or others?",
+    "What task or responsibility brought you an unexpected sense of satisfaction today?",
+    "Describe a moment when you felt energized, inspired, or fully engaged.",
+    "What limiting belief or assumption are you beginning to question?",
+    "How have your priorities evolved over the past month, and what prompted that change?",
+    "What is one area of your life where small, consistent effort is beginning to show results?",
+    "What environment, activity, or person helped you feel grounded today?",
+    "What opportunity for growth emerged from a setback or inconvenience this week?",
+    "If today had a central lesson, what would it be and why?", 
+    "What intention would you like to carry into tomorrow's decisions and interactions?",
+    "Looking back on today, what are you most proud of becoming, not just accomplishing?"
+
+];
+
+const dayOfYear = new Date().getDate();
+const currentDailyPrompt = dailyPrompts[dayOfYear % dailyPrompts.length];
+
+
+
+
 
 
 // ========================  Check-in for connection (health endpoint) ==========================
@@ -629,6 +671,3 @@ async function testingConnection() {
 }
 
 testingConnection();
-
-
-console.log("combined project");
