@@ -4,10 +4,12 @@ const path = require("path");
 const { google } = require("googleapis");
 const axios = require ("axios");
 const app =  express();
-const PORT = 3000;
+const dotenv = require('dotenv');
 
 
+dotenv.config();
 
+const PORT = process.env.PORT
 
 // server.js to read JSON data from Zapier
 app.use(express.json());
