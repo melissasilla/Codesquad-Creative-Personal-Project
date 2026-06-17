@@ -631,3 +631,4 @@ async function testingConnection() {
 testingConnection();
 
 
+console.log("combined project");
