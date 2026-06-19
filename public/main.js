@@ -613,7 +613,7 @@ let journalLogs = JSON.parse(localStorage.getItem('yss_journals')) || [];
 
 
 const dailyPrompts = [
-    "What areas of my life am I growing in, even if progress fells slow?",
+    "What areas of my life am I growing in, even if progress feels slow?",
      "Write down three small victories you achieved today, no matter how minor",
      "How have you successfully prioritized boundary setting in your schedule this week?",
      "What is a personal development challenge you feel ready to step into tomorrow?",
@@ -644,6 +644,179 @@ const dailyPrompts = [
 const dayOfYear = new Date().getDate();
 const currentDailyPrompt = dailyPrompts[dayOfYear % dailyPrompts.length];
 
+const focusInput = document.getElementById("focus-input");
+const modalOverlay = document.getElementById("dashboard-modal") || document.getElementById("modal-overlay");
+const modalCloseButton = document.getElementById("modal-close-button") || document.getElementById("modal-close-btn");
+const modalBody = document.getElementById("modal-dynamic-body") || document.getElementById("modal-body");
+
+
+
+if (focusInput) {
+    focusInput.addEventListener("keydown" , (e) =>{
+        if (e.key === "Enter" && focusInput.value.trim() !== "") {
+            todoList.push ({ text: focusInput.value.trim(), done: false, date: new Date(). toLocaleDateString() });
+            localStorage.setItem('yss_todos' , JSON.stringify(todoList));
+
+
+            focusInput.value = "";
+            focusInput.placeholder = "Task has been logged! Please click the To-Do button to view your task!";
+            setTimeout(() => { focusInput.placeholder = "Place your focus here." ; }, 3000);
+        }
+    })
+}
+
+function openModal(htmlContent) {
+    modalBody.innerHTML = htmlContent;
+    modalOverlay.style.display = "flex";
+}
+
+if(modalCloseButton) {
+    modalCloseButton.addEventListener("click" , () => {modalOverlay.style.display = "none"; });
+}
+
+function initTools() {
+    const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+    if (toolButtons.length > 0) {
+        toolButtons[0].click();
+    };
+
+
+    toolButtons[0].addEventListener("click" ,() => {
+        let todoHTML =`
+            <h3 class= "modal-heading">Your Main Focus</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="font-size: 0.85rem; opacity: 0.7;">Manage your focuses</span>
+            <button id="clear-todo-trigger" style="background: rgba(255, 75, 75, 0.2); border: 1px solid #ff4b4b; color:#ff8888; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Clear All</button>
+            </div>
+            <ul class="todo-list-container">
+        `;
+        
+         
+        if(todoList.length ===0) todoHTML += `<li>No focus items logged yet. Please enter a focus item in the main input field above.</li>`;
+        todoList.forEach((todo, idx) => {
+            todoHTML += `
+                <li class="todo-item">
+                <input type="checkbox" ${todo.done ? 'checked' : ''} onclick="window.toggleTodoItem(${idx})">
+                <span class= "${todo.done ? 'todo-done' : ''}">${todo.text}</span>
+                </li>`;
+        });
+        todoHTML += `</ul>`;
+        openModal(todoHTML);
+
+
+
+    const clearButton = document.getElementById('clear-todo-trigger');
+    if(clearButton) {
+        clearButton.addEventListener('click' , () => {
+            if(confirm("Ready to clear your focus list?")) {
+                todoList = [];
+                localStorage.setItem('yss_todos' , JSON.stringify(todoList));
+                toolButtons[0].click();
+            }
+        });
+    }
+
+
+    });
+
+
+
+    toolButtons[1].addEventListener("click" , () => {
+        window.open("https://app.projecthealthyminds.com/?utm_campaign=mb&utm_medium=newsletter&utm_source=morning_brew" , "_blank");
+    });
+
+    toolButtons[2].addEventListener("click" , () => {
+        let journalHTML =  `
+            <h3 class="modal-heading">Daily Reflection Prompt</h3>
+            <p class="journal-prompt">"${currentDailyPrompt}"</p>
+            <textarea id="journal-text-entry" class="journal-textarea" placeholder="Express your thoughts!"></textarea>
+            <button class="soundscape-action-button submit-journal-button" onclick="window.saveJournalEntry()">Save Reflection</button>
+
+            <div class="log-list">
+            <strong class="log-title">Previous Entries:</strong>
+            ${journalLogs.map((j, idx) => `
+                <div class="journal-log-entry"
+                onclick="window.viewJournalEntry(${idx})"
+                style="cursor: pointer; padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); transition: background 0.2s;"
+                onmouseover="this.style.background='transparent'">
+                <strong>${j.date}:</strong> ${j.text.substring(0,40)}${j.text.length > 40 ? '...' : ''}
+                </div>
+                
+                ` ).join('') || '<div style="opacity: 0.5;"> No previous logs found.</div>'
+            }
+            </div>`;
+
+        openModal(journalHTML);
+    });
+
+
+    toolButtons[3].addEventListener("click" , () => {
+        let moodHTML = `
+            <h3 class="modal-heading centered-heading">How are you feeling today?</h3>
+            <div class="mood-emoji-container">
+                <button class="emoji-button" onclick="window.logUserMood('😀' , 'Happy')">😀</button>
+                <button class="emoji-button" onclick="window.logUserMood('😞' , 'Sad')">😞</button>
+                <button class="emoji-button" onclick="window.logUserMood('☺️' , 'Peaceful')">☺️</button>
+                 <button class="emoji-button" onclick="window.logUserMood('🧘‍♀️' , 'Grounded')">🧘‍♀️</button>
+                <button class="emoji-button" onclick="window.logUserMood('💤' , 'Tired')">💤</button>
+                <button class="emoji-button" onclick="window.logUserMood('🚀' , 'Creative')">🚀</button>
+                 <button class="emoji-button" onclick="window.logUserMood('🌱' , 'Reflective')">🌱</button>
+            </div>
+
+            <div class="log-list">
+                <strong class="log-title">Your Mood Patterns Tracking Log:</strong>
+                ${moodLogs.map(m => `<div class="mood-log-entry">${m.date}-${m.emoji} (${m.label})</div>`).join('') || '<div style= "opacity:0.5;">No check-ins captured yet.</div>'}
+             </div>`;
+
+             openModal(moodHTML);
+    });
+}
+
+window.toggleTodoItem = (index) => {
+    todoList[index].done = !todoList[index].done;
+    localStorage.setItem('yss_todos', JSON.stringify(todoList));
+   
+};
+
+window.saveJournalEntry = () => {
+    const entryElement = document.getElementById("journal-text-entry");
+    if(!entryElement) return;
+
+    const txt = entryElement.value.trim();
+    if(!txt) return;
+
+    journalLogs.unshift({ date: new Date().toLocaleDateString(), text: txt, prompt: currentDailyPrompt });
+    localStorage.setItem('yss_journals', JSON.stringify(journalLogs));
+    
+
+
+const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+if(toolButtons.length >=3) {
+    toolButtons[2].click();
+}
+
+};
+
+window.logUserMood = (emoji, label) => {
+   const timestamp = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  
+
+   moodLogs.unshift({ date: timestamp, emoji, label });
+    localStorage.setItem('yss_moods', JSON.stringify(moodLogs));
+
+
+const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+if(toolButtons.length >=4) {
+    toolButtons[3].click();
+}
+   
+};
+
+
+document.addEventListener("DOMContentLoaded" , () => {
+    console.log("DOM is working");
+initTools();
+}); 
 
 
 

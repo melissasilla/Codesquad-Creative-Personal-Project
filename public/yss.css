@@ -536,17 +536,117 @@ img {
 
 /* ====== Connections & tools Controls ============ */
 
-.modal-overlay {
-    position: fixed;
+.modal-heading {
+    font-family: "Exos" , sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.centered-heading {
+    text-align: center;
+}
+
+/* To-Do list layout */
+.todo-list-container{
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.todo-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    font-family: "Exos", sans-serif;
+    font-size: 0.85rem;
+}
+
+.todo-done {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+
+.clear-list-button:hover {
+    background:rgba(255, 255, 255, 0.3)!important;
+    color: #ffffff !important;
+}
+
+/* Journal Layout */
+.journal-prompt {
+    font-style: italic;
+    opacity: 0.9;
+    margin: 15px 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.journal-textarea {
     width: 100%;
-    height: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "Exos", sans-serif;
+    resize: none;
+}
+
+.submit-journal-button {
+    margin-top: 12px;
+    width: 100%;
+}
+
+.journal-log-entry {
+    margin-top: 8px;
+    opacity: 0.8;
+    border-bottom: 1px solid rgba(0, 0 , 0, 0.05);
+    padding-bottom: 4px;
+}
+
+
+/* Mood Check-In Layout */
+.mood-emoji-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+
+.mood-log-entry {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    opacity: 0.85;
+
+}
+
+
+.log-title {
+    display: block;
+    margin-bottom: 5px;
+    font-family: "Exos" , sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-overlay { 
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0,0,0,0.4);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: 999999;
+
 }
+
 
 
 .modal-content.glass {
@@ -560,7 +660,9 @@ img {
     position: relative;
     color: white;
     font-family: "Exos" , sans-serif;
+    
 }
+
 
 .modal-close {
     position: absolute;
@@ -594,6 +696,7 @@ img {
     border-top: 1px solid rgba(255,255,255, 0.1);
     padding-top: 10px;
 }
+
 
 
 
