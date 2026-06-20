@@ -1,3 +1,13 @@
+:root {
+    --accent-color-rgb: 216, 109, 25;
+
+    --accent-glow-light: rgba(var(--accent-color-rgb), 0.2);
+    --accent-glow-heavy: rgba(var(--accent-color-rgb), 0.2);
+
+}
+
+
+
 * {
     box-sizing: border-box;
     /* margin: 0;
@@ -185,11 +195,34 @@ html,body {
     justify-content: center;
     align-items: center;
     /* margin-bottom: 25px; */
-    background: rgba(0,0,0, 0.1);
-    box-shadow: 0 0 30px rgba(122, 122, 122, 0.8);
+    background: rgba(var(--accent-color-rgb), 0.05);
+    border: 1px solid rgba(var(--accent-color-rgb), 0.15);
+
+    /* background: rgba(0,0,0, 0.1);
+    box-shadow: 0 0 30px rgba(122, 122, 122, 0.8); */
+
+
+animation: centerPulse 3s infinite ease-in-out alternate;
 
 }
 
+@keyframes centerPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 255,255, 0.1);
+    }
+
+    100% {
+        transform: scale(1.04);
+        box-shadow: 0 0 35px rgba(255, 255,255, 0.1),
+                    0 0 70px rgba(216, 109, 25, 0.4);
+    }
+}
+
+
+#dash-clock {
+    align-items: flex-end;
+}
 
 .time-display h1{
     font-size: 2rem;
@@ -229,7 +262,7 @@ html,body {
 
 
 .time {
-    padding-left: 80px;
+    padding-left: 100px;
 }
 
 
@@ -294,7 +327,7 @@ html,body {
 }
 
 .tool-icon{
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(122, 122, 122, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 12px;
     color: white;
@@ -318,7 +351,7 @@ html,body {
     display: flex;
     align-items: center;
     gap: 15px;
-    background: rgba(255, 255, 255, 0.8);
+     background: rgba(122, 122, 122, 0.8);
     padding: 12px;
     border-radius: 12px;
 }
@@ -610,7 +643,8 @@ img {
 /* Mood Check-In Layout */
 .mood-emoji-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
     margin: 20px 0;
 }
 
@@ -633,6 +667,7 @@ img {
 
 .modal-overlay { 
 
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -696,6 +731,69 @@ img {
     border-top: 1px solid rgba(255,255,255, 0.1);
     padding-top: 10px;
 }
+
+
+
+/* ====== AI Wellness Dashboard ============ */
+
+
+
+.ai-mood-selectors {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    
+    /* margin: 12px 0; */
+}
+
+.ai-mood-button {
+    border-radius: 50%;
+}
+
+
+#ai-quote-container {
+    margin-top: 15px;
+    display: none;
+}
+
+#ai-quote-text {
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    /* border-left: 2px solid #D86D19; */
+    padding-left: 10px;
+}
+
+
+#ai-quote-author {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    display: block;
+    margin-top: 5px;
+    text-align: right;
+}
+
+
+
+/* UI Action Buttons */
+
+.soundscape-action-button,
+.submit-journal-button,
+#clear-todo-trigger {
+    background: rgba(var(--accent-color-rgb), 0.2);
+    border: 1px solid rgb(var(--accent-color-rgb)) !important;
+    color: #ffffff;
+    transition: all 0.3 ease;
+}
+
+
+#dash-greeting strong,
+.modal-heading {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(var(--accent-color-rgb),0.5);
+}
+
 
 
 

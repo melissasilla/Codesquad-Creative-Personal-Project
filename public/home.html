@@ -16,8 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&family=Exo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
+    <!-- Icons + buttons -->
     <script src="https://kit.fontawesome.com/f7fbad1ef5.js" crossorigin="anonymous"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     
 
@@ -36,7 +38,10 @@
 
         <!-- Navigation section -->
         <nav class="nav-bar">
-            <i class="fa-solid fa-bars"></i>
+            <!-- <i class="fa-solid fa-bars"></i> -->
+
+             <div id="google-signin-button"></div>
+
         </nav>
 
       
@@ -162,19 +167,34 @@
                 </div>
             </div>
 
-            <!-- AI content placeholder -->
+            <!-- AI Wellness Dashboard -->
              
             <div class="glass-panel presence-widget">
                 <h4>AI Wellness Dashboard</h4>
                 <div class="presence-status">
-                    <div class="stauts-glow"></div>
+                    <div class="status-glow" id="ai-glow"></div>
                     <div>
                         <p><strong>Select Your Mood </strong></p>
                         <p>For your personalized daily motivation quote.</p>
-                    </div>
-                </div>
 
-            </div>
+                    <div class="ai-mood-selectors">
+                        <button class="ai-mood-button" onclick="fetchAIMotivation('Happy' , '😄')">😄</button>
+                        <button class="ai-mood-button" onclick="fetchAIMotivation('Anxious' , '😰')">😰</button>
+                        <button class="ai-mood-button" onclick="fetchAIMotivation('Tired' , '🥱')">🥱</button>
+                        <button class="ai-mood-button" onclick="fetchAIMotivation('Unmotivated' , '📉')">📉</button>
+                         <button class="ai-mood-button" onclick="fetchAIMotivation('Peaceful' , '🧘‍♀️')">🧘‍♀️</button>
+                     </div>   
+
+                     <div>
+
+                     <div id="ai-quote-container">
+                     <p id="ai-quote-text"></p>
+                     <span id="ai-quote-author"> AI Wellness Guide</span>
+                    </div>
+
+                </div>
+             </div>
+         </div>
 
         </section>
     

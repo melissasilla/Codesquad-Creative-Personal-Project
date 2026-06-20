@@ -1,5 +1,5 @@
 // =========== NeatGradient specifications =================================
-
+let currentUser = null;
 import { NeatGradient } from "https://esm.run/@firecms/neat";
 
 const config = {
@@ -103,16 +103,38 @@ async function matchWithInstagram() {
         const data = await response.json();
 
         if (data.url) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
             img.onload = () => {
                 const colorThief = new ColorThief();
                 const palette = colorThief.getPalette(img, 5);
+
                 const newColorObjects = palette.map( c => ({
-                    color: `rgb (${c[0]}, ${c[1]}, ${c[2]})` , 
+                    color: `rgb(${c[0]}, ${c[1]}, ${c[2]})` , 
                     enabled: true
                 }));
                 config.colors = newColorObjects;
                 gradient.updateConfig(config);
+
+
+                const primaryRGB = palette[0];
+                const dominantColorString = `rgb(${primaryRGB[0]} , ${primaryRGB[1]}, ${primaryRGB[2]})`;
+
+
+                const actionButtons = document.querySelectorAll('.soundscape-action-button, .submit-journal-button, .tool-icon, .emoji-button');
+
+                actionButtons.forEach(button => {
+                    button.style.backgroundColor = `rgba(${primaryRGB[0]}, ${primaryRGB[1]}, ${primaryRGB[2]}, 0.2)`;
+                    button.style.borderColor = dominantColorString;
+                });
+
+                const centerHalo = document.querySelectorAll('.pulse-circle, #ai-glow');
+                centerHalo.forEach(element => {
+                    element.style.boxShadow = `0 0 40px rgba(${primaryRGB[0]}, ${primaryRGB[1]}, ${primaryRGB[2]}, 0.4 )`;
+                });
             };
+
+            img.src = `/api/proxy-image?url=${encodeURIComponent(data.url)}`;
         }
     } catch (error) {
         console.error("Sorry! The connection here has failed." , error);
@@ -155,12 +177,15 @@ function updateDashboardTime () {
 
 // Time of day Greeting options
     const currentHour = now.getHours();
-    let greetingString = "Good Evening, Melissa.";
+
+    const displayName = currentUser ? currentUser.name : "Melissa";
+
+    let greetingString = `Good Evening, ${displayName}.`;
 
     if(currentHour < 12) {
-        greetingString = "Good Morning, Melissa.";
+        greetingString = `Good Morning, ${displayName}.` ;
     }else if (currentHour <18) {
-        greetingString = "Good Afternoon, Melissa."
+        greetingString = `Good Afternoon, ${displayName}.`
     }
 
 
@@ -268,6 +293,11 @@ async function showQuoteAndMatchColors(index) {
             console.error("You don't have enough colors to extract" , palette);
             return;
         }
+
+const primaryRGB = palette[0];
+
+document.documentElement.style.setProperty('--accent-color-rgb' , `${primaryRGB[0]} , ${primaryRGB[1]} , ${primaryRGB[2]}`);
+
 
         const rgbToHex = (rgbArray) => {
             return "#" + rgbArray.map (x => {
@@ -676,9 +706,9 @@ if(modalCloseButton) {
 
 function initTools() {
     const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
-    if (toolButtons.length > 0) {
-        toolButtons[0].click();
-    };
+    // if (toolButtons.length > 0) {
+    //     toolButtons[0].click();
+    // };
 
 
     toolButtons[0].addEventListener("click" ,() => {
@@ -734,20 +764,40 @@ function initTools() {
 
             <div class="log-list">
             <strong class="log-title">Previous Entries:</strong>
+            <div id="journal-entries-container">
             ${journalLogs.map((j, idx) => `
                 <div class="journal-log-entry"
-                onclick="window.viewJournalEntry(${idx})"
-                style="cursor: pointer; padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); transition: background 0.2s;"
-                onmouseover="this.style.background='transparent'">
+                data-index="${idx}"
+                style="cursor: pointer; padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); transition: background 0.2s;">
                 <strong>${j.date}:</strong> ${j.text.substring(0,40)}${j.text.length > 40 ? '...' : ''}
                 </div>
                 
                 ` ).join('') || '<div style="opacity: 0.5;"> No previous logs found.</div>'
             }
+            </div>
+            </div>
             </div>`;
 
         openModal(journalHTML);
+
+
+        const logEntries = document.querySelectorAll(".journal-log-entry");
+        logEntries.forEach(entry => {
+            entry.addEventListener("click" , (e) => {
+                const idx = entry.getAttribute("data-index");
+                if(window.viewJournalEntry) {
+                    window.viewJournalEntry(parseInt(idx, 10));
+                }
+            });
+
+            entry.addEventListener("mouseenter", () => {
+                entry.style.background = "rgba(255, 255, 255, 0.05)";
+            });
+            entry.addEventListener("mouseleave", () => {
+                entry.style.background = "transparent";
+        });
     });
+});
 
 
     toolButtons[3].addEventListener("click" , () => {
@@ -775,7 +825,11 @@ function initTools() {
 window.toggleTodoItem = (index) => {
     todoList[index].done = !todoList[index].done;
     localStorage.setItem('yss_todos', JSON.stringify(todoList));
-   
+
+   const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+    if(toolButtons.length > 0) {
+    toolButtons[0].click();
+    }
 };
 
 window.saveJournalEntry = () => {
@@ -787,14 +841,47 @@ window.saveJournalEntry = () => {
 
     journalLogs.unshift({ date: new Date().toLocaleDateString(), text: txt, prompt: currentDailyPrompt });
     localStorage.setItem('yss_journals', JSON.stringify(journalLogs));
-    
 
-
-const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
-if(toolButtons.length >=3) {
+    const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+    if(toolButtons.length >=3) {
     toolButtons[2].click();
-}
+    }
+   
+};
+    
+    window.viewJournalEntry = (index) => {
+        const entry = journalLogs[index];
+        if (!entry) return;
 
+
+        const viewHTML = `
+            <h3 class="modal-heading">Review Reflection</h3>
+            <span style="font-size: 0.75rem; opacity: 0.6; display: block; margin-bottom: 10px;">Entered on: ${entry.date}</span>
+
+            <p class="journal-prompt" style="border-left: 2px solid rgba(255,255,255,0.3); padding-left: 10px;">
+            <strong>Prompt:</strong><br>"${entry.prompt || 'Daily Reflection'}"
+            </p>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 8px; font-family: 'Exos' , sans-serif; font-size:0.9rem; line-height: 1.5; max-height: 200px; overflow-y:auto; white-space: pre-wrap; margin-bottom: 20px;">${entry.text}
+            </div>
+
+            <button onclick="window.backToJournalPrompt()" class="soundscape-action-button" style="width: 100%; padding: 8px; border-radius: 5px; cursor: pointer;">
+            &larr; Back to Journaling</button>
+        `;
+
+
+
+
+    if(modalBody) {
+         modalBody.innerHTML = viewHTML;
+        }
+    };
+
+    window.backToJournalPrompt = () => {
+    const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+    if(toolButtons.length >=3) {
+    toolButtons[2].click();
+    }
 };
 
 window.logUserMood = (emoji, label) => {
@@ -804,20 +891,122 @@ window.logUserMood = (emoji, label) => {
    moodLogs.unshift({ date: timestamp, emoji, label });
     localStorage.setItem('yss_moods', JSON.stringify(moodLogs));
 
+    const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
+    if(toolButtons.length >=4) {
+        toolButtons[3].click();
+    }
 
-const toolButtons = document.querySelectorAll(".tools-row .tool-icon");
-if(toolButtons.length >=4) {
-    toolButtons[3].click();
-}
-   
+
 };
 
 
-document.addEventListener("DOMContentLoaded" , () => {
-    console.log("DOM is working");
-initTools();
-}); 
 
+// ========================  Google OAuth
+// ==========================
+
+function initGoogleAuth() {
+    fetch('/api/auth/me')
+    .then(response => response.json())
+    .then(data => {
+        if(data.authenticated) {
+            currentUser = data.user;
+            updateDashboardTime();
+        }else {
+            renderGoogleButton();
+        }
+    });
+}
+
+function renderGoogleButton() {
+    if (typeof google === "undefined") return;
+
+    google.accounts.id.initialize({
+        client_id:"962888758021-tfoiupdvst62ilnp5vrehosc729i9o8r.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById("google-signin-button"),
+        { theme: "outline" , size: "large"}
+    );
+}
+
+
+function handleCredentialResponse(response) {
+    fetch('/api/auth/google' , {
+        method: 'POST' , 
+        headers: { 'Content-Type' : 'application/json' },
+        body: JSON.stringify({ token: response.credential })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentUser = data.user;
+            updateDashboardTime();
+            document.getElementById("google-signin-button").style.display = "none";
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded" , () => {
+    console.log("Dashboard is fully loaded.");
+    initTools();
+    setTimeout(initGoogleAuth, 1000);
+});
+
+
+
+// ========================  AI Wellness Dashboard Functionality
+// ==========================
+
+window.fetchAIMotivation = async function(mood, emoji) {
+    const quoteContainer = document.getElementById("ai-quote-container");
+    const quoteText = document.getElementById("ai-quote-text");
+    const glow = document.getElementById("ai-glow");
+
+if (quoteContainer) quoteContainer.style.display = "block";
+if (quoteText) quoteText.innerText = "Checking your AI wellness guide...";
+if (glow) glow.style.animation = "pulse 1s infinite alternate";
+
+
+try {
+    const todaysDate = new Date().toLocaleDateString("en-US" , { weekday : 'long' , month: 'long' , day: 'numeric' });
+
+    const response = await fetch("/api/get-ai-quote", {
+        method: "POST",
+        headers: { "Content-Type" : "application/json" },
+        body: JSON.stringify({ mood: mood, date: todaysDate })
+    });
+
+    if (!response.ok) throw new Error ("Failed to generate");
+
+    const data = await response.json();
+    console.log("AI API Raw Data" , data);
+
+
+    if (quoteText) {
+        if (typeof data === "string") {
+            quoteText.innerText = `"${data}"`;
+        }else if(data.quote) {
+            quoteText.innerText = `"${data.quote}"`;
+        }else if (Array.isArray(data)) {
+            quoteText.innerText = `"${data.join(' ')}"`;
+        }else {
+            quoteText.innerText = `"${Object.values(data)[0]}"`;
+        }
+    }
+
+}catch (error) {
+    console.error("AI Motivation Error:" , error);
+
+    if(quoteText) {
+        quoteText.innerText = "Unable to reach your guide. this moment. Take a deep breath and keep moving forward!";
+    }
+}finally {
+    if (glow) glow.style.animation="none";
+}
+
+};
 
 
 
