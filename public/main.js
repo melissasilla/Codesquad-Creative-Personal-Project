@@ -959,56 +959,34 @@ document.addEventListener("DOMContentLoaded" , () => {
 // ========================  AI Wellness Dashboard Functionality
 // ==========================
 
-window.fetchAIMotivation = async function(mood, emoji) {
-    const quoteContainer = document.getElementById("ai-quote-container");
-    const quoteText = document.getElementById("ai-quote-text");
-    const glow = document.getElementById("ai-glow");
+async function fetchAIMotivation(mood, emoji) {
+    try {
+        const response = await fetch('/api/get-ai-quote' , {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mood: mood,
+                date: new Date().toLocaleDateString("en-US" , { weekday: 'long' , day: 'numeric' })
+            })
+        });
+        const data = await response.json();
 
-if (quoteContainer) quoteContainer.style.display = "block";
-if (quoteText) quoteText.innerText = "Checking your AI wellness guide...";
-if (glow) glow.style.animation = "pulse 1s infinite alternate";
+        if (data.quote) {
+            const quoteText = document.getElementById("ai-quote-text");
+            quoteText.innerText = data.quote;
 
-
-try {
-    const todaysDate = new Date().toLocaleDateString("en-US" , { weekday : 'long' , month: 'long' , day: 'numeric' });
-
-    const response = await fetch("/api/get-ai-quote", {
-        method: "POST",
-        headers: { "Content-Type" : "application/json" },
-        body: JSON.stringify({ mood: mood, date: todaysDate })
-    });
-
-    if (!response.ok) throw new Error ("Failed to generate");
-
-    const data = await response.json();
-    console.log("AI API Raw Data" , data);
-
-
-    if (quoteText) {
-        if (typeof data === "string") {
-            quoteText.innerText = `"${data}"`;
-        }else if(data.quote) {
-            quoteText.innerText = `"${data.quote}"`;
-        }else if (Array.isArray(data)) {
-            quoteText.innerText = `"${data.join(' ')}"`;
-        }else {
-            quoteText.innerText = `"${Object.values(data)[0]}"`;
-        }
+            const quoteContainer = document.getElementById("ai-quote-container");
+            quoteContainer.style.display = "block";        
     }
-
-}catch (error) {
-    console.error("AI Motivation Error:" , error);
-
-    if(quoteText) {
-        quoteText.innerText = "Unable to reach your guide. this moment. Take a deep breath and keep moving forward!";
-    }
-}finally {
-    if (glow) glow.style.animation="none";
+} catch(error) {
+    console.error("Frontend fetch error:" , error);
 }
 
-};
+}
 
-
+window.fetchAIMotivation = fetchAIMotivation;
 
 
 // ========================  Check-in for connection (health endpoint) ==========================

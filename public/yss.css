@@ -139,7 +139,7 @@ html,body {
 .feed-item p {
    font-family: "Exo" , sans-serif;
     margin: 0 0 4px 0;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 
 
@@ -167,6 +167,14 @@ html,body {
 }
 
 
+.soundscape-btn-group{
+    margin-top: 10px;
+}
+
+.soundscape-control-row {
+    margin-bottom: 10px;
+}
+
 
 /* ========= Center panel Elements ============ */
 
@@ -191,31 +199,31 @@ html,body {
     width: 400px;
     height: 400px;
     border-radius: 50%;
-    border: 2px solid rgba(rgba(255, 255, 255, 0.8));
     justify-content: center;
     align-items: center;
-    /* margin-bottom: 25px; */
     background: rgba(var(--accent-color-rgb), 0.05);
-    border: 1px solid rgba(var(--accent-color-rgb), 0.15);
-
-    /* background: rgba(0,0,0, 0.1);
-    box-shadow: 0 0 30px rgba(122, 122, 122, 0.8); */
-
-
-animation: centerPulse 3s infinite ease-in-out alternate;
+    border: 1px solid rgba(var(--accent-color-rgb), 0.2);
+    animation: centerPulse 3s infinite ease-in-out alternate;
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4 ease;
 
 }
+
+#ai-glow {
+    transition: box-shadow 0.4s ease;
+}
+
+
 
 @keyframes centerPulse {
     0% {
         transform: scale(1);
-        box-shadow: 0 0 20px rgba(255, 255,255, 0.1);
+        box-shadow: 0 0 20px rgba(var(--accent-color-rgb), 0.1);
     }
 
     100% {
         transform: scale(1.04);
-        box-shadow: 0 0 35px rgba(255, 255,255, 0.1),
-                    0 0 70px rgba(216, 109, 25, 0.4);
+        box-shadow: 0 0 35px rgba(var(--accent-color-rgb), 0.2),
+                    0 0 70px rgba(var(--accent-color-rgb), 0.5);
     }
 }
 
@@ -240,6 +248,8 @@ animation: centerPulse 3s infinite ease-in-out alternate;
 
 
 .focus-box{
+    color:#ffffff;
+    align-items: center;
     margin-bottom: 60px;
 
 }
@@ -273,7 +283,7 @@ animation: centerPulse 3s infinite ease-in-out alternate;
 #focus-input{
     background: transparent;
     border: 0;
-    border-bottom: 2px solid rgba(122, 122, 122, 0.8);
+    border-bottom: 2px solid white;
     color: white;
     text-align: center;
     font-size: 1.1rem;
@@ -286,6 +296,11 @@ animation: centerPulse 3s infinite ease-in-out alternate;
 
 #focus-input:focus {
     border-bottom-color: rgba(122, 122, 122, 0.8);
+}
+
+#focus-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
 }
 
 
@@ -496,7 +511,7 @@ img {
 
 
 .track-row button {
-    background: linear-gradient(#FCB5B5 , #8F2D56, #DD4B1A);
+    /* background: linear-gradient(#FCB5B5 , #8F2D56, #DD4B1A); */
     border: none;
     border-radius: 30px;
     color: #ffffff;
@@ -506,7 +521,7 @@ img {
     cursor: pointer;
     min-width: 75px;
     margin-right: 12px;
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    /* box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); */
     transition: all 0.2 ease;
 }
 
@@ -533,6 +548,7 @@ img {
     color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
 }
+
 
 
 .soundscape-action-button {
@@ -761,8 +777,9 @@ img {
     font-style: italic;
     font-size: 0.95rem;
     line-height: 1.4;
-    /* border-left: 2px solid #D86D19; */
+    border-left: 2px solid rgba(var(--accent-color-rgb));
     padding-left: 10px;
+    height: auto;
 }
 
 
@@ -780,12 +797,31 @@ img {
 
 .soundscape-action-button,
 .submit-journal-button,
-#clear-todo-trigger {
-    background: rgba(var(--accent-color-rgb), 0.2);
+#clear-todo-trigger, 
+.tool-icon,
+.track-row button,
+.ai-mood-button,
+.journal-button {
+    background: rgba(var(--accent-color-rgb), 0.15) !important;
     border: 1px solid rgb(var(--accent-color-rgb)) !important;
-    color: #ffffff;
-    transition: all 0.3 ease;
+    color: #ffffff !important;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease !important;
 }
+
+
+/* Hover effect */
+.soundscape-action-button:hover,
+.submit-journal-button:hover,
+#clear-todo-trigger:hover,
+.tool-icon:hover,
+.track-row button:hover,
+.ai-mood-button:hover,
+.journal-button:hover {
+    background: rgba(var(--accent-color-rgb), 0.45) !important;
+    box-shadow: 0 0 15px rgba(var(--accent-color-rgb), 0.5) !important;
+    transform: scale(1.04);
+}
+
 
 
 #dash-greeting strong,
